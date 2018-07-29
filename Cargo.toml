@@ -1,0 +1,7 @@
+[package]
+name = "employees_with_db"
+version = "0.1.0"
+authors = ["Vagelis Prokopiou <vagelis.prokopiou@gmail.com>"]
+
+[dependencies]
+mysql = "*"
