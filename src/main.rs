@@ -70,7 +70,7 @@ fn main() {
             let mut departments = vec![];
             println!("Please provide the desired department. The available departments are:");
 
-            // Todo: Get all the available departments from the db and show them.
+            // Get all the available departments from the db and show them.
             let mut results: QueryResult = db_connection.prep_exec(r"SELECT department FROM employees GROUP BY department ORDER BY department", ()).unwrap();
             while results.more_results_exists() {
                 for result in results.by_ref() {
