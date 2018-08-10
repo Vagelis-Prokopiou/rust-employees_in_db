@@ -67,9 +67,58 @@ fn main() {
                 }
             }
         } else if user_action == "3" {
+            let mut departments = vec![];
             println!("Please provide the desired department. The available departments are:");
+
+            // Todo: Get all the available departments from the db and show them.
+            let mut results: QueryResult = db_connection.prep_exec(r"SELECT department FROM employees GROUP BY department ORDER BY department", ()).unwrap();
+            while results.more_results_exists() {
+                for result in results.by_ref() {
+                    match result {
+                        Ok(row) => {
+                            let values: Vec<Value> = row.unwrap();
+                            let department: &String = &values[0].as_sql(true);
+                            let mut department = department.trim().to_string();
+                            let lenght = department.len();
+
+                            // Removing the single quotes that come from the database.
+                            department.truncate(lenght - 1);
+                            department.remove(0);
+
+                            println!("{}", department);
+                            departments.push(department);
+                        }
+                        Err(e) => println!("Error: {:?}", e),
+                    };
+                }
+            }
+
+            // Get the department from the user.
             let department: String = helpers::get_user_input();
-            println!("Department: {}", department);
+
+            if !departments.contains(&department) {
+                println!("Wrong department. Please try again.");
+                continue;
+            }
+
+            // Get all the employess of the specific department.
+            let mut results: QueryResult = db_connection.prep_exec(r"SELECT name FROM employees WHERE department = :department ORDER BY name", params! {
+                    "department" => &department
+                }).unwrap();
+            while results.more_results_exists() {
+                println!("----- Department: {} -----", department);
+
+                for result in results.by_ref() {
+                    match result {
+                        Ok(row) => {
+                            let values: Vec<Value> = row.unwrap();
+                            let employee: &String = &values[0].as_sql(true);
+                            println!("{}", employee);
+                        }
+                        Err(e) => println!("Error: {:?}", e),
+                    };
+                }
+            }
         } else if user_action == "q" {
             break;
         } else {
