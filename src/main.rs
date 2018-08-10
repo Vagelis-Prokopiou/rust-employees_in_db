@@ -2,6 +2,7 @@
 extern crate mysql;
 
 use mysql::QueryResult;
+use mysql::Value;
 
 mod helpers;
 
@@ -51,13 +52,18 @@ fn main() {
                 "department" => tokens[3],
             }).unwrap();
         } else if user_action == "2" {
-            let mut result: QueryResult = db_connection.prep_exec(r"SELECT name, department FROM employees ORDER BY DEPARTMENT, NAME", ()).unwrap();
-            while result.more_results_exists() {
-                for x in result.by_ref() {
-                    match x {
-                        Ok(row) => println!("Row: {:?}", row), /* Todo: Get fields from row. */
+            let mut results: QueryResult = db_connection.prep_exec(r"SELECT department, name FROM employees ORDER BY DEPARTMENT, NAME", ()).unwrap();
+            while results.more_results_exists() {
+                for result in results.by_ref() {
+                    match result {
+                        Ok(row) => {
+                            let values: Vec<Value> = row.unwrap();
+                            let department: &String = &values[0].as_sql(true);
+                            let employee_name: &String = &values[1].as_sql(true);
+                            println!("Department: {}. Employee: {}", department, employee_name);
+                        }
                         Err(e) => println!("Error: {:?}", e),
-                    }
+                    };
                 }
             }
         } else if user_action == "3" {
