@@ -8,11 +8,11 @@ mod helpers;
 
 fn main() {
     // Database info.
-    let db_user = "root";
-    let db_password = "root";
-    let db_name = "rust_employees";
-    let db_ip = "localhost";
-    let db_port = "3306";
+    let db_user: &str = "root";
+    let db_password: &str = "root";
+    let db_name: &str = "rust_employees";
+    let db_ip: &str = "localhost";
+    let db_port: &str = "3306";
 
     let db_connection = mysql::Pool::new(format!("mysql://{}:{}@{}:{}/{}", db_user, db_password, db_ip, db_port, db_name)).unwrap();
 
